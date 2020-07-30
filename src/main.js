@@ -25,7 +25,9 @@ Vue.prototype.$firebase = firebase;
 
 
 
-
+// Moment
+import moment from 'moment';
+Vue.prototype.$moment = moment;
 
 // Axios
 const axios = require('axios');
