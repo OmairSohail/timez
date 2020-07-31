@@ -1,6 +1,6 @@
 <template>
   <div>
-     <v-bottom-navigation
+     <!-- <v-bottom-navigation
             :value="activeBtn"
             grow
             color="teal"
@@ -63,6 +63,57 @@
             </v-btn>
 
      </v-bottom-navigation>
+      -->
+    <v-app-bar>
+     <!-- <v-toolbar > -->
+        <v-app-bar-nav-icon @click="drawer = !drawer" v-if="status.loggedIn"></v-app-bar-nav-icon>
+        <v-toolbar-title >
+            <span class="font-weight-bold">Timez</span>
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn   link text>Home</v-btn>
+        <v-btn   link text>Contact</v-btn>
+        <v-btn   link text>About</v-btn>
+        <v-btn   link text v-if="!status.loggedIn">Login</v-btn>
+        <v-btn   link text v-if="!status.loggedIn">Signup</v-btn>
+        <v-btn text v-if="status.loggedIn">
+            <span class="caption">{{status.email}}</span>
+        </v-btn>
+        <v-avatar color="teal" size="48" v-if="status.loggedIn">
+            <span class="white--text headline">User</span>
+        </v-avatar>
+         <v-menu
+            bottom
+            origin="center center"
+            transition="scale-transition"
+            >
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                v-bind="attrs"
+                v-on="on"
+                text
+                >
+                 <v-icon class="grey--text"> mdi-chevron-down</v-icon>
+                </v-btn>
+            </template>
+
+            <v-list>
+                <v-list-item list>
+                    <v-list-item-title>Dashboard</v-list-item-title>
+                </v-list-item>
+                <v-list-item list>
+                    <v-list-item-title>Signout</v-list-item-title>
+                </v-list-item>
+            </v-list>
+         </v-menu>   
+     <!-- </v-toolbar> -->
+     
+    </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" class="teal" absolute temporary>
+      
+    </v-navigation-drawer> 
+    
       <v-snackbar
             v-model="snackbar">
             {{ text }}
@@ -90,7 +141,8 @@ export default {
        return{
            activeBtn:1,
            snackbar:false,
-           text:null, 
+           text:null,
+           drawer:false, 
        }
    },
    methods:{
