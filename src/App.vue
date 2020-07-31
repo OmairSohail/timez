@@ -1,7 +1,11 @@
 <template>
   <v-app>
-    <navBar :status="status"/> 
-    <router-view></router-view>
+    <v-main>
+      <navBar :status="status"/> 
+      <div class="ma-4 px-4"> 
+      <router-view></router-view>
+      </div> 
+    </v-main>
   </v-app>
 </template>
 

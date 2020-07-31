@@ -71,16 +71,13 @@
             <span class="font-weight-bold">Timez</span>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn   link text>Home</v-btn>
-        <v-btn   link text>Contact</v-btn>
-        <v-btn   link text>About</v-btn>
-        <v-btn   link text v-if="!status.loggedIn">Login</v-btn>
-        <v-btn   link text v-if="!status.loggedIn">Signup</v-btn>
+        <v-btn link to="/login" text v-if="!status.loggedIn">Login</v-btn>
+        <v-btn link to="/signup" text v-if="!status.loggedIn">Signup</v-btn>
         <v-btn text v-if="status.loggedIn">
             <span class="caption">{{status.email}}</span>
         </v-btn>
         <v-avatar color="teal" size="48" v-if="status.loggedIn">
-            <span class="white--text headline">User</span>
+            
         </v-avatar>
          <v-menu
             bottom
@@ -88,30 +85,38 @@
             transition="scale-transition"
             >
             <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                v-bind="attrs"
-                v-on="on"
-                text
-                >
-                 <v-icon class="grey--text"> mdi-chevron-down</v-icon>
-                </v-btn>
+               
+                 <v-icon class="grey--text" 
+                 v-bind="attrs"
+                 v-on="on"
+                 >
+                 mdi-chevron-down
+                 </v-icon>
+                
             </template>
 
             <v-list>
-                <v-list-item list>
+                <v-list-item link to="/dashboard">
                     <v-list-item-title>Dashboard</v-list-item-title>
                 </v-list-item>
-                <v-list-item list>
-                    <v-list-item-title>Signout</v-list-item-title>
+                <v-list-item link @click="logout()">
+                    <v-list-item-title class="">Signout</v-list-item-title>
                 </v-list-item>
             </v-list>
          </v-menu>   
      <!-- </v-toolbar> -->
-     
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" class="teal" absolute temporary>
-      
+    <v-navigation-drawer v-model="drawer" class="white" absolute temporary>
+       <v-list dense>
+           <v-subheader>Dashboard</v-subheader>
+           <v-list-item link :to="link.route" v-for="link in links" :key="link.text">
+               <v-list-item-action>
+                   <v-icon>{{link.icon}}</v-icon>
+               </v-list-item-action>
+               <v-list-item-content>{{link.text}}</v-list-item-content>
+           </v-list-item>
+       </v-list>
     </v-navigation-drawer> 
     
       <v-snackbar
@@ -143,6 +148,10 @@ export default {
            snackbar:false,
            text:null,
            drawer:false, 
+           links:[
+               { icon:'mdi-account',text:'Profile',route:'/profile'},
+               { icon:'mdi-text-box-check-outline',text:'My Attendence',route:'/UserAttendence'},
+           ]
        }
    },
    methods:{
