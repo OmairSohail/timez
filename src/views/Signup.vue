@@ -146,7 +146,7 @@ export default {
                 const ref =  this.$firebase.database().ref(`timez_Users/${id}`);
                 ref.set(data);
               }
-
+              
               this.overlay = true;  
               await this.$firebase.auth().createUserWithEmailAndPassword(this.userdata.email,this.userdata.password)
               .then(()=>{
@@ -159,6 +159,7 @@ export default {
                              displayName:this.userdata.username
                         });
                         console.log('user logged in !')
+                        
                         this.$router.replace('/');
                      }else{
                         this.overlay = false;

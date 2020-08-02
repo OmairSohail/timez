@@ -27,7 +27,7 @@
               </v-flex>
               <v-flex xs12 sm1 md1>
                  <div class="caption grey--text">Status</div>
-                 <div class="">Present</div>
+                 <v-chip color="teal" text-color="white"> Present</v-chip>              
               </v-flex>
               <v-flex xs12 sm2 md2>
                  <div class="caption grey--text">Work Time</div>
@@ -41,7 +41,7 @@
 
 <script>
 export default {
-     name:'myattendence'
+     name:'myattendence',
 }
 </script>
 
