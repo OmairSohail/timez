@@ -77,7 +77,8 @@
             <span class="caption">{{status.email}}</span>
         </v-btn>
         <v-avatar color="teal" size="48" v-if="status.loggedIn">
-            
+            <img :src="getImage" alt="" v-if="getImage">
+            <!-- <img src="../assets/user.png" alt="" v-if="!getImage">  -->
         </v-avatar>
          <v-menu
             bottom
@@ -108,6 +109,15 @@
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" class="white" absolute temporary>
+       <v-layout row align-center justify-center class="mt-10">
+           <v-flex xs5 sm5 md5>
+               <v-avatar size="100">
+                  <img :src="getImage" alt="">
+               </v-avatar>
+               <p class="subheading pa-2">{{getImage.username}}</p>
+           </v-flex>
+       </v-layout>
+
        <v-list dense>
            <v-subheader>Dashboard</v-subheader>
            <v-list-item link :to="link.route" v-for="link in links" :key="link.text">
@@ -153,6 +163,18 @@ export default {
                { icon:'mdi-text-box-check-outline',text:'My Attendence',route:'/UserAttendence'},
            ]
        }
+   },
+   computed:{
+        getImage(){
+        //   const id = this.$store.state.user.id;
+        //   const ref = this.$firebase.database().ref(`timez_Users/${id}`);
+        //   var data;
+        //   ref.once('value', (snapshot)=>{
+        //      data = snapshot.val();
+        //   });
+          const photo = this.$store.state.user.photo; 
+          return photo ? photo : '../assets/user.png';
+        }
    },
    methods:{
        logout(){

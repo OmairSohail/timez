@@ -23,6 +23,19 @@ firebase.initializeApp(firebaseConfig);
 }
 Vue.prototype.$firebase = firebase;
 
+firebase.auth().onAuthStateChanged((user)=>{
+  if(user)
+  {
+    store.dispatch('createUser',{
+      id:user.uid,
+      username:user.displayName,
+      email:user.email,
+      photo:user.photoURL,
+    }); 
+  }else{
+    store.dispatch('deleteUser');
+  }
+})
 
 
 // Moment

@@ -19,7 +19,7 @@
                      <v-icon left>mdi-food-fork-drink</v-icon>
                         Start Break
                </v-btn>
-               <v-btn color="teal" block @click="endBreak()" dark  v-if="onBreak" large>
+               <v-btn color="teal" block @click="endBreak()" dark   large>
                      <v-icon left>mdi-close-circle</v-icon>
                         End Break
                </v-btn>   
@@ -47,11 +47,11 @@ export default {
    computed:{
     checkAttendence()
     {
-       const name = this.$firebase.auth().currentUser.displayName;
+       const id = this.$firebase.auth().currentUser.uid;
        const date = this.$moment().format('DD-MM-YYYY');
        
        const checkMarking = (name,date) => {
-           const ref = this.$firebase.database().ref(`timez_attendence/${name}/`).child(`${date}`);
+           const ref = this.$firebase.database().ref(`timez_attendence/${id}/`).child(`${date}`);
            
            ref.once('value',(snapshot) => {
              if(snapshot.exists())
@@ -67,18 +67,18 @@ export default {
           
        }
  
-      checkMarking(name,date);
+      checkMarking(id,date);
       
       return this.existence;
      
     },
     checkBreak()
     {
-        const name = this.$firebase.auth().currentUser.displayName;
+        const id = this.$firebase.auth().currentUser.uid;
         const date = this.$moment().format('DD-MM-YYYY');
 
-        const checkingBreak = (name,date) => {
-           const ref = this.$firebase.database().ref(`timez_attendence/${name}/${date}`);
+        const checkingBreak = (id,date) => {
+           const ref = this.$firebase.database().ref(`timez_attendence/${id}/${date}/breaks`);
            
            ref.on('value',(snapshot)=>{
                let data = snapshot.val();
@@ -94,7 +94,7 @@ export default {
           
         }
        
-         checkingBreak(name,date);
+         checkingBreak(id,date);
          return this.onBreak;
     }
    },
@@ -103,17 +103,20 @@ export default {
        {
           const time = this.$moment().format('LTS');
           const date = this.$moment().format('DD-MM-YYYY');
+          const id = this.$firebase.auth().currentUser.uid;
           const name = this.$firebase.auth().currentUser.displayName;
 
            
           
-          const ref = this.$firebase.database().ref(`timez_attendence/${name}/${date}`);
+          const ref = this.$firebase.database().ref(`timez_attendence/${id}/${date}`);
           
           const writeDate = (name,date,time) => {
               ref.set({
                  name:name,
                  date:date,
-                 time:time,
+                 checkin:time,
+                 checkout:null,
+                 breaks:[]
               });
           }
           
@@ -124,12 +127,13 @@ export default {
        {
           const time = this.$moment().format('LTS');
           const date = this.$moment().format('DD-MM-YYYY');
-          const name = this.$firebase.auth().currentUser.displayName;
-          const ref = this.$firebase.database().ref(`timez_attendence/${name}/${date}`);
-
+          const id = this.$firebase.auth().currentUser.uid;
+         //  const key = this.$firebase.database().ref(`timez_attendence/${uid}/${date}`).push().key;
+          const ref = this.$firebase.database().ref(`timez_attendence/${id}/${date}/breaks`);
+         //  const ref2 = this.$firebase.database().ref(`timez_attendence/${id}/${date}`);
           const updateAttendence = (time) => {
-            ref.update({
-              break_start:time     
+            ref.set({
+              break_start:time   
             });
           }
           
@@ -139,31 +143,34 @@ export default {
        {
           const time = this.$moment().format('LTS');
           const date = this.$moment().format('DD-MM-YYYY');
-          const name = this.$firebase.auth().currentUser.displayName;
+          const id = this.$firebase.auth().currentUser.uid;
           var data;
-          const ref = this.$firebase.database().ref(`timez_attendence/${name}/${date}`);
+          const ref = this.$firebase.database().ref(`timez_attendence/${id}/${date}/breaks`);
 
           const updateAttendence = (time) => {
             ref.update({
               break_end:time     
-            })
+            });
             this.onBreak = false;
           }
-          
          //  updateAttendence(time);
-
           ref.on('value',(snapshot)=>{
              data = snapshot.val();
           });
           
-         const getTimeDifference = (start,end) => {
-              var s = this.$moment(start,'LTS').substract(this.$moment(end,'LTS'))
-              const f = this.$moment(s).format('LTS');
-              console.log(f);
-              
-         }
+         const start = this.$moment(data.break_start);
+         const end = this.$moment();
+         const now = new Date();
+         console.log(now);
+        
+         
+         // const getTimeDifference = (start,end) => {
+         //      var s = this.$moment(start,'LTS').substract(this.$moment(end,'LTS'))
+         //      const f = this.$moment(s).format('LTS');
+         //      console.log(f);
+         // }
 
-         getTimeDifference(data.break_start,data.break_end); 
+         // getTimeDifference(data.break_start,data.break_end); 
        }
    }
 }

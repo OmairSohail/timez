@@ -6,8 +6,7 @@
       <v-container class="d-flex flex-column justify-center align-center">
           <v-avatar size="150">
                 <img
-                  src="https://cdn.vuetifyjs.com/images/john.jpg"
-                  alt="John"
+                  :src="getImage.profileImage"
                 >
           </v-avatar>
           
@@ -45,7 +44,7 @@
             </v-layout>
              <v-layout row justify-space-between>
                 <v-flex xm12 sm12 md12>
-                    <v-btn color="info" class="mx-2" @click.prevent="updateProfile()">Update Profile</v-btn>
+                    <v-btn color="info" class="mx-2" @click.prevent="updateUser()">Update Profile</v-btn>
                 </v-flex>
             </v-layout>
 
@@ -112,6 +111,20 @@ export default {
             location:null,
 
           },
+          rules:{
+            usernameRule:[
+              v => (!!v || 'Username must be filled'),
+              v => (v && v.length <= 15) || 'Username must be less than 15 characters',
+
+            ],
+            phoneRule:[
+               v => (!!v || 'Phone is required'),
+               v => (v && v.length === 11) || 'Phone Number must be 11 digits',
+            ],
+            locationRule:[
+              
+            ]
+          },
           profileImage:[],
           snackbar:false,
           email:null,
@@ -120,30 +133,54 @@ export default {
           file:null,
           uploading:false,
           valid:false,
+          userProfile:null,
+        }
+      },
+      computed:{
+        getImage(){   
+          // const id = this.$firebase.auth().currentUser.uid; 
+          const id = this.$store.state.user.id;
+          console.log(id)
+          const ref = this.$firebase.database().ref(`timez_Users/${id}`);
+       
+          ref.on('value', (snapshot)=>{
+             
+             this.userProfile = snapshot.val();
+          });  
+          return this.userProfile;
         }
       },
       methods:{
-          uploadProfile(){
+          async updateUser(){
               if(this.uploading === false)
               {
-                const id = this.$firebase.auth().uid;
+                const id = this.$firebase.auth().currentUser.uid;
                 const user = this.$firebase.auth().currentUser;
                 const ref = this.$firebase.database().ref(`timez_Users/${id}`);
                 
                 user.updateProfile({
-                  photoUrl:this.file
+                  photoURL:this.file,
                 });
+
+                this.$store.dispatch('updatePhoto',this.file);
                 const writeData = (username,phone,location,profileImage) => { 
                     ref.update({
                       username:username,
                       phone:phone,
                       location:location,
                       profileImage:profileImage
-                    });
+                    }).then(console.log('done')).catch(err => console.log(err.message));
                 }
                 
-                writeData(this.profileData.username,this.profileData.phone,this.profileData.location,this.file);
-
+               await writeData(this.profileData.username,this.profileData.phone,this.profileData.location,this.file);
+                   
+                this.$refs.updateProfileForm.reset(); 
+                this.profileImage = null;   
+                this.snackbar = true;
+                this.text = 'Your Profile Is Updated Successfully!'
+              }else{
+                this.snackbar = true;
+                this.text = 'Please Wait while image is uploaded !'
               }
           },
           resetPassword(){
